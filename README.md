@@ -1,7 +1,7 @@
 # CGS4144 - Team 12
 
 ## Scientific Question
-Can we identify altered microRNA expressions in individuals with Type 1 diabetes?
+How do microRNA expressions differ between individuals with Type 1 diabetes and healthy controls?
 
 ## Refine.bio dataset: 
 https://www.refine.bio/experiments/SRP018853/altered-microrna-expression-in-individuals-at-high-risk-of-type-1-diabetes
