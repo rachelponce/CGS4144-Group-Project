@@ -1,0 +1,81 @@
+refinebio_accession_code	experiment_accession	refinebio_age	refinebio_cell_line	refinebio_compound	refinebio_developmental_stage	refinebio_disease	refinebio_disease_stage	refinebio_genetic_information	refinebio_organism	refinebio_platform	refinebio_processed	refinebio_processor_id	refinebio_processor_name	refinebio_processor_version	refinebio_race	refinebio_sex	refinebio_source_archive_url	refinebio_source_database	refinebio_specimen_part	refinebio_subject	refinebio_time	refinebio_title	refinebio_treatment
+SRR764979	SRP018853								HOMO_SAPIENS	Illumina HiSeq 2000 (IlluminaHiSeq2000)	True	304	Tximport	v1.21.2-hotfix				SRA		cd4+ t cells		M7_naive	
+SRR764980	SRP018853								HOMO_SAPIENS	Illumina Genome Analyzer IIx (IlluminaGenomeAnalyzerIIx)	True	304	Tximport	v1.21.2-hotfix				SRA		cd4+ t cells		M8_naive	
+SRR764981	SRP018853								HOMO_SAPIENS	Illumina Genome Analyzer IIx (IlluminaGenomeAnalyzerIIx)	True	304	Tximport	v1.21.2-hotfix				SRA		cd4+ t cells		M9_naive	
+SRR764982	SRP018853								HOMO_SAPIENS	Illumina Genome Analyzer IIx (IlluminaGenomeAnalyzerIIx)	True	304	Tximport	v1.21.2-hotfix				SRA		cd4+ t cells		M10_naive	
+SRR764983	SRP018853								HOMO_SAPIENS	Illumina HiSeq 2000 (IlluminaHiSeq2000)	True	304	Tximport	v1.21.2-hotfix				SRA		cd4+ t cells		M12_naive	
+SRR764984	SRP018853								HOMO_SAPIENS	Illumina HiSeq 2000 (IlluminaHiSeq2000)	True	304	Tximport	v1.21.2-hotfix				SRA		cd4+ t cells		M29_naive	
+SRR764985	SRP018853								HOMO_SAPIENS	Illumina HiSeq 2000 (IlluminaHiSeq2000)	True	304	Tximport	v1.21.2-hotfix				SRA		cd4+ t cells		M7_rTreg	
+SRR764986	SRP018853								HOMO_SAPIENS	Illumina HiSeq 2000 (IlluminaHiSeq2000)	True	304	Tximport	v1.21.2-hotfix				SRA		cd4+ t cells		M8_rTreg	
+SRR764987	SRP018853								HOMO_SAPIENS	Illumina Genome Analyzer IIx (IlluminaGenomeAnalyzerIIx)	True	304	Tximport	v1.21.2-hotfix				SRA		cd4+ t cells		M9_rTreg	
+SRR764988	SRP018853								HOMO_SAPIENS	Illumina Genome Analyzer IIx (IlluminaGenomeAnalyzerIIx)	True	304	Tximport	v1.21.2-hotfix				SRA		cd4+ t cells		M10_rTreg	
+SRR764989	SRP018853								HOMO_SAPIENS	Illumina HiSeq 2000 (IlluminaHiSeq2000)	True	304	Tximport	v1.21.2-hotfix				SRA		cd4+ t cells		M12_rTreg	
+SRR764990	SRP018853								HOMO_SAPIENS	Illumina HiSeq 2000 (IlluminaHiSeq2000)	True	304	Tximport	v1.21.2-hotfix				SRA		cd4+ t cells		M26_rTreg	
+SRR764991	SRP018853								HOMO_SAPIENS	Illumina HiSeq 2000 (IlluminaHiSeq2000)	True	304	Tximport	v1.21.2-hotfix				SRA		cd4+ t cells		M27_rTreg	
+SRR764992	SRP018853								HOMO_SAPIENS	Illumina HiSeq 2000 (IlluminaHiSeq2000)	True	304	Tximport	v1.21.2-hotfix				SRA		cd4+ t cells		M30_rTreg	
+SRR764993	SRP018853								HOMO_SAPIENS	Illumina HiSeq 2000 (IlluminaHiSeq2000)	True	304	Tximport	v1.21.2-hotfix				SRA		cd4+ t cells		M7_aTreg	
+SRR764994	SRP018853								HOMO_SAPIENS	Illumina Genome Analyzer IIx (IlluminaGenomeAnalyzerIIx)	True	304	Tximport	v1.21.2-hotfix				SRA		cd4+ t cells		M8_aTreg	
+SRR764995	SRP018853								HOMO_SAPIENS	Illumina HiSeq 2000 (IlluminaHiSeq2000)	True	304	Tximport	v1.21.2-hotfix				SRA		cd4+ t cells		M9_aTreg	
+SRR764996	SRP018853								HOMO_SAPIENS	Illumina Genome Analyzer IIx (IlluminaGenomeAnalyzerIIx)	True	304	Tximport	v1.21.2-hotfix				SRA		cd4+ t cells		M10_aTreg	
+SRR764997	SRP018853								HOMO_SAPIENS	Illumina HiSeq 2000 (IlluminaHiSeq2000)	True	304	Tximport	v1.21.2-hotfix				SRA		cd4+ t cells		M12_aTreg	
+SRR764998	SRP018853								HOMO_SAPIENS	Illumina HiSeq 2000 (IlluminaHiSeq2000)	True	304	Tximport	v1.21.2-hotfix				SRA		cd4+ t cells		M26_aTreg	
+SRR764999	SRP018853								HOMO_SAPIENS	Illumina HiSeq 2000 (IlluminaHiSeq2000)	True	304	Tximport	v1.21.2-hotfix				SRA		cd4+ t cells		M27_aTreg	
+SRR765000	SRP018853								HOMO_SAPIENS	Illumina HiSeq 2000 (IlluminaHiSeq2000)	True	304	Tximport	v1.21.2-hotfix				SRA		cd4+ t cells		M29_aTreg	
+SRR765001	SRP018853								HOMO_SAPIENS	Illumina HiSeq 2000 (IlluminaHiSeq2000)	True	304	Tximport	v1.21.2-hotfix				SRA		cd4+ t cells		M30_aTreg	
+SRR765002	SRP018853								HOMO_SAPIENS	Illumina Genome Analyzer IIx (IlluminaGenomeAnalyzerIIx)	True	304	Tximport	v1.21.2-hotfix				SRA		cd4+ t cells		M7_Tcm	
+SRR765003	SRP018853								HOMO_SAPIENS	Illumina Genome Analyzer IIx (IlluminaGenomeAnalyzerIIx)	True	304	Tximport	v1.21.2-hotfix				SRA		cd4+ t cells		M8_Tcm	
+SRR765004	SRP018853								HOMO_SAPIENS	Illumina HiSeq 2000 (IlluminaHiSeq2000)	True	304	Tximport	v1.21.2-hotfix				SRA		cd4+ t cells		M9_Tcm	
+SRR765005	SRP018853								HOMO_SAPIENS	Illumina Genome Analyzer IIx (IlluminaGenomeAnalyzerIIx)	True	304	Tximport	v1.21.2-hotfix				SRA		cd4+ t cells		M10_Tcm	
+SRR765006	SRP018853								HOMO_SAPIENS	Illumina HiSeq 2000 (IlluminaHiSeq2000)	True	304	Tximport	v1.21.2-hotfix				SRA		cd4+ t cells		M12_Tcm	
+SRR765007	SRP018853								HOMO_SAPIENS	Illumina Genome Analyzer IIx (IlluminaGenomeAnalyzerIIx)	True	304	Tximport	v1.21.2-hotfix				SRA		cd4+ t cells		M7_Tem	
+SRR765008	SRP018853								HOMO_SAPIENS	Illumina Genome Analyzer IIx (IlluminaGenomeAnalyzerIIx)	True	304	Tximport	v1.21.2-hotfix				SRA		cd4+ t cells		M8_Tem	
+SRR765009	SRP018853								HOMO_SAPIENS	Illumina HiSeq 2000 (IlluminaHiSeq2000)	True	304	Tximport	v1.21.2-hotfix				SRA		cd4+ t cells		M9_Tem	
+SRR765010	SRP018853								HOMO_SAPIENS	Illumina HiSeq 2000 (IlluminaHiSeq2000)	True	304	Tximport	v1.21.2-hotfix				SRA		cd4+ t cells		M10_Tem	
+SRR765011	SRP018853								HOMO_SAPIENS	Illumina HiSeq 2000 (IlluminaHiSeq2000)	True	304	Tximport	v1.21.2-hotfix				SRA		cd4+ t cells		M12_Tem	
+SRR765012	SRP018853								HOMO_SAPIENS	Illumina HiSeq 2000 (IlluminaHiSeq2000)	True	304	Tximport	v1.21.2-hotfix				SRA		cd4+ t cells		M7_Ttm	
+SRR765013	SRP018853								HOMO_SAPIENS	Illumina HiSeq 2000 (IlluminaHiSeq2000)	True	304	Tximport	v1.21.2-hotfix				SRA		cd4+ t cells		M8_Ttm	
+SRR765014	SRP018853								HOMO_SAPIENS	Illumina HiSeq 2000 (IlluminaHiSeq2000)	True	304	Tximport	v1.21.2-hotfix				SRA		cd4+ t cells		M9_Ttm	
+SRR765015	SRP018853								HOMO_SAPIENS	Illumina HiSeq 2000 (IlluminaHiSeq2000)	True	304	Tximport	v1.21.2-hotfix				SRA		cd4+ t cells		M10_Ttm	
+SRR765016	SRP018853								HOMO_SAPIENS	Illumina HiSeq 2000 (IlluminaHiSeq2000)	True	304	Tximport	v1.21.2-hotfix				SRA		cd4+ t cells		M12_Ttm	
+SRR765017	SRP018853								HOMO_SAPIENS	Illumina HiSeq 2000 (IlluminaHiSeq2000)	True	304	Tximport	v1.21.2-hotfix				SRA		cd4+ t cells		P1_Naive	
+SRR765018	SRP018853								HOMO_SAPIENS	Illumina HiSeq 2000 (IlluminaHiSeq2000)	True	304	Tximport	v1.21.2-hotfix				SRA		cd4+ t cells		P2_Naive	
+SRR765019	SRP018853								HOMO_SAPIENS	Illumina HiSeq 2000 (IlluminaHiSeq2000)	True	304	Tximport	v1.21.2-hotfix				SRA		cd4+ t cells		P3_Naive	
+SRR765020	SRP018853								HOMO_SAPIENS	Illumina HiSeq 2000 (IlluminaHiSeq2000)	True	304	Tximport	v1.21.2-hotfix				SRA		cd4+ t cells		P4_Naive	
+SRR765021	SRP018853								HOMO_SAPIENS	Illumina HiSeq 2000 (IlluminaHiSeq2000)	True	304	Tximport	v1.21.2-hotfix				SRA		cd4+ t cells		P5_Naive	
+SRR765022	SRP018853								HOMO_SAPIENS	Illumina HiSeq 2000 (IlluminaHiSeq2000)	True	304	Tximport	v1.21.2-hotfix				SRA		cd4+ t cells		P6_Naive	
+SRR765023	SRP018853								HOMO_SAPIENS	Illumina HiSeq 2000 (IlluminaHiSeq2000)	True	304	Tximport	v1.21.2-hotfix				SRA		cd4+ t cells		P7_Naive	
+SRR765024	SRP018853								HOMO_SAPIENS	Illumina HiSeq 2000 (IlluminaHiSeq2000)	True	304	Tximport	v1.21.2-hotfix				SRA		cd4+ t cells		P1_rTreg	
+SRR765025	SRP018853								HOMO_SAPIENS	Illumina HiSeq 2000 (IlluminaHiSeq2000)	True	304	Tximport	v1.21.2-hotfix				SRA		cd4+ t cells		P2_rTreg	
+SRR765026	SRP018853								HOMO_SAPIENS	Illumina HiSeq 2000 (IlluminaHiSeq2000)	True	304	Tximport	v1.21.2-hotfix				SRA		cd4+ t cells		P3_rTreg	
+SRR765027	SRP018853								HOMO_SAPIENS	Illumina HiSeq 2000 (IlluminaHiSeq2000)	True	304	Tximport	v1.21.2-hotfix				SRA		cd4+ t cells		P4_rTreg	
+SRR765028	SRP018853								HOMO_SAPIENS	Illumina HiSeq 2000 (IlluminaHiSeq2000)	True	304	Tximport	v1.21.2-hotfix				SRA		cd4+ t cells		P5_rTreg	
+SRR765029	SRP018853								HOMO_SAPIENS	Illumina HiSeq 2000 (IlluminaHiSeq2000)	True	304	Tximport	v1.21.2-hotfix				SRA		cd4+ t cells		P6_rTreg	
+SRR765030	SRP018853								HOMO_SAPIENS	Illumina HiSeq 2000 (IlluminaHiSeq2000)	True	304	Tximport	v1.21.2-hotfix				SRA		cd4+ t cells		P7_rTreg	
+SRR765031	SRP018853								HOMO_SAPIENS	Illumina HiSeq 2000 (IlluminaHiSeq2000)	True	304	Tximport	v1.21.2-hotfix				SRA		cd4+ t cells		P1_aTreg	
+SRR765032	SRP018853								HOMO_SAPIENS	Illumina HiSeq 2000 (IlluminaHiSeq2000)	True	304	Tximport	v1.21.2-hotfix				SRA		cd4+ t cells		P2_aTreg	
+SRR765033	SRP018853								HOMO_SAPIENS	Illumina HiSeq 2000 (IlluminaHiSeq2000)	True	304	Tximport	v1.21.2-hotfix				SRA		cd4+ t cells		P3_aTreg	
+SRR765034	SRP018853								HOMO_SAPIENS	Illumina HiSeq 2000 (IlluminaHiSeq2000)	True	304	Tximport	v1.21.2-hotfix				SRA		cd4+ t cells		P4_aTreg	
+SRR765035	SRP018853								HOMO_SAPIENS	Illumina HiSeq 2000 (IlluminaHiSeq2000)	True	304	Tximport	v1.21.2-hotfix				SRA		cd4+ t cells		P5_aTreg	
+SRR765036	SRP018853								HOMO_SAPIENS	Illumina HiSeq 2000 (IlluminaHiSeq2000)	True	304	Tximport	v1.21.2-hotfix				SRA		cd4+ t cells		P6_aTreg	
+SRR765037	SRP018853								HOMO_SAPIENS	Illumina HiSeq 2000 (IlluminaHiSeq2000)	True	304	Tximport	v1.21.2-hotfix				SRA		cd4+ t cells		P7_aTreg	
+SRR765038	SRP018853								HOMO_SAPIENS	Illumina HiSeq 2000 (IlluminaHiSeq2000)	True	304	Tximport	v1.21.2-hotfix				SRA		cd4+ t cells		P1_Tcm	
+SRR765039	SRP018853								HOMO_SAPIENS	Illumina HiSeq 2000 (IlluminaHiSeq2000)	True	304	Tximport	v1.21.2-hotfix				SRA		cd4+ t cells		P2_Tcm	
+SRR765040	SRP018853								HOMO_SAPIENS	Illumina HiSeq 2000 (IlluminaHiSeq2000)	True	304	Tximport	v1.21.2-hotfix				SRA		cd4+ t cells		P3_Tcm	
+SRR765041	SRP018853								HOMO_SAPIENS	Illumina HiSeq 2000 (IlluminaHiSeq2000)	True	304	Tximport	v1.21.2-hotfix				SRA		cd4+ t cells		P4_Tcm	
+SRR765042	SRP018853								HOMO_SAPIENS	Illumina HiSeq 2000 (IlluminaHiSeq2000)	True	304	Tximport	v1.21.2-hotfix				SRA		cd4+ t cells		P5_Tcm	
+SRR765043	SRP018853								HOMO_SAPIENS	Illumina HiSeq 2000 (IlluminaHiSeq2000)	True	304	Tximport	v1.21.2-hotfix				SRA		cd4+ t cells		P6_Tcm	
+SRR765044	SRP018853								HOMO_SAPIENS	Illumina HiSeq 2000 (IlluminaHiSeq2000)	True	304	Tximport	v1.21.2-hotfix				SRA		cd4+ t cells		P7_Tcm	
+SRR765045	SRP018853								HOMO_SAPIENS	Illumina HiSeq 2000 (IlluminaHiSeq2000)	True	304	Tximport	v1.21.2-hotfix				SRA		cd4+ t cells		P1_Tem	
+SRR765046	SRP018853								HOMO_SAPIENS	Illumina HiSeq 2000 (IlluminaHiSeq2000)	True	304	Tximport	v1.21.2-hotfix				SRA		cd4+ t cells		P2_Tem	
+SRR765047	SRP018853								HOMO_SAPIENS	Illumina HiSeq 2000 (IlluminaHiSeq2000)	True	304	Tximport	v1.21.2-hotfix				SRA		cd4+ t cells		P3_Tem	
+SRR765048	SRP018853								HOMO_SAPIENS	Illumina HiSeq 2000 (IlluminaHiSeq2000)	True	304	Tximport	v1.21.2-hotfix				SRA		cd4+ t cells		P4_Tem	
+SRR765049	SRP018853								HOMO_SAPIENS	Illumina HiSeq 2000 (IlluminaHiSeq2000)	True	304	Tximport	v1.21.2-hotfix				SRA		cd4+ t cells		P5_Tem	
+SRR765050	SRP018853								HOMO_SAPIENS	Illumina HiSeq 2000 (IlluminaHiSeq2000)	True	304	Tximport	v1.21.2-hotfix				SRA		cd4+ t cells		P6_Tem	
+SRR765051	SRP018853								HOMO_SAPIENS	Illumina HiSeq 2000 (IlluminaHiSeq2000)	True	304	Tximport	v1.21.2-hotfix				SRA		cd4+ t cells		P7_Tem	
+SRR765052	SRP018853								HOMO_SAPIENS	Illumina HiSeq 2000 (IlluminaHiSeq2000)	True	304	Tximport	v1.21.2-hotfix				SRA		cd4+ t cells		P1_Ttm	
+SRR765053	SRP018853								HOMO_SAPIENS	Illumina HiSeq 2000 (IlluminaHiSeq2000)	True	304	Tximport	v1.21.2-hotfix				SRA		cd4+ t cells		P2_Ttm	
+SRR765054	SRP018853								HOMO_SAPIENS	Illumina HiSeq 2000 (IlluminaHiSeq2000)	True	304	Tximport	v1.21.2-hotfix				SRA		cd4+ t cells		P3_Ttm	
+SRR765055	SRP018853								HOMO_SAPIENS	Illumina HiSeq 2000 (IlluminaHiSeq2000)	True	304	Tximport	v1.21.2-hotfix				SRA		cd4+ t cells		P4_Ttm	
+SRR765056	SRP018853								HOMO_SAPIENS	Illumina HiSeq 2000 (IlluminaHiSeq2000)	True	304	Tximport	v1.21.2-hotfix				SRA		cd4+ t cells		P5_Ttm	
+SRR765057	SRP018853								HOMO_SAPIENS	Illumina HiSeq 2000 (IlluminaHiSeq2000)	True	304	Tximport	v1.21.2-hotfix				SRA		cd4+ t cells		P6_Ttm	
+SRR765058	SRP018853								HOMO_SAPIENS	Illumina HiSeq 2000 (IlluminaHiSeq2000)	True	304	Tximport	v1.21.2-hotfix				SRA		cd4+ t cells		P7_Ttm	
