@@ -5,49 +5,53 @@
 # https://www.r-bloggers.com/2019/05/quick-and-easy-t-sne-analysis-in-r/
 # https://alexslemonade.github.io/refinebio-examples/03-rnaseq/dimension-reduction_rnaseq_02_umap.html
 # https://alexslemonade.github.io/refinebio-examples/03-rnaseq/differential-expression_rnaseq_01.html
+# https://alexslemonade.github.io/refinebio-examples/02-microarray/clustering_microarray_01_heatmap.html#4_Clustering_Heatmap_-_Microarray
+# https://cran.r-project.org/web/packages/gprofiler2/vignettes/gprofiler2.html 
+# https://datacatz.wordpress.com/2018/01/19/gene-set-enrichment-analysis-with-topgo-part-1/
 
-# How to clear Rstudio environment: rm(list = ls())
+
+
+
+# How to clear Rstudio environment
+rm(list = ls())
+
 # How to clear Rstudio console: CTRL + L
 # Delete a data frame: rm(df1)
 
 
 # Package Installation
 install.packages("devtools")
-install.packages("BiocManager", repos = "https://cloud.r-project.org")
+install.packages("BiocManager")
+install.packages("tidyverse")
+install.packages("pheatmap")
+install.packages("gprofiler2")
+BiocManager::install("DESeq2")
+BiocManager::install("EnhancedVolcano")
+BiocManager::install("apeglm")
+BiocManager::install("M3C")
+BiocManager::install("ComplexHeatmap")
+BiocManager::install("umap")
+BiocManager::install("clusterProfiler")
+BiocManager::install("msigdbr")
+BiocManager::install("AnnotationDbi")
+BiocManager::install("topGO")
+BiocManager::install("biomaRt")
+BiocManager::install("Rgraphviz")
+
 
 # Install the Homo sapiens package
-if (!("org.Hs.eg.db" %in% installed.packages())) {
-  BiocManager::install("org.Hs.eg.db", update = FALSE)
-}
-
-if (!("DESeq2" %in% installed.packages())) {
-  BiocManager::install("DESeq2", update = FALSE)
-}
-if (!("EnhancedVolcano" %in% installed.packages())) {
-  BiocManager::install("EnhancedVolcano", update = FALSE)
-}
-if (!("apeglm" %in% installed.packages())) {
-  BiocManager::install("apeglm", update = FALSE)
-}
+BiocManager::install("org.Hs.eg.db") 
 
 if (!("BiocVersion" %in% installed.packages())) {
   BiocManager::install(version = 'devel')
 }
 
-if (!("M3C" %in% installed.packages())) {
-  BiocManager::install("M3C")
-}
-
-if (!("ComplexHeatmap" %in% installed.packages())) {
-  BiocManager::install("ComplexHeatmap", update = FALSE)
-}
-
-install_github("jokergoo/ComplexHeatmap")
 
 # Libraries
 library(org.Hs.eg.db)
 library(readr)
 library(dplyr)
+library(tidyverse)
 library(tidyr)
 library(stringr)
 library(magrittr)
@@ -59,6 +63,15 @@ library(ComplexHeatmap)
 library(devtools)
 library(circlize)
 library(EnhancedVolcano)
+library(pheatmap)
+library(gprofiler2)
+library(topGO)
+library(biomaRt)
+library(Rgraphviz)
+library(clusterProfiler)
+library(msigdbr)
+library(AnnotationDbi)
+
 
 
 # Create the data folder if it doesn't exist
@@ -67,13 +80,13 @@ if (!dir.exists("data")) {
 }
 
 # Create the plots folder if it doesn't exist
-if (!dir.exists("plots")) {
-  dir.create(plots_dir)
+if (!dir.exists("Assn2-plots")) {
+  dir.create("Assn2-plots")
 }
 
 # Create the results folder if it doesn't exist
 if (!dir.exists("results")) {
-  dir.create(results_dir)
+  dir.create("results")
 }
 
 
@@ -88,19 +101,19 @@ data_file <- file.path(data_dir, "SRP018853.tsv")
 # inside the directory saved as `data_dir`
 metadata_file <- file.path(data_dir, "metadata_SRP018853.tsv")
 
-
 file.exists(data_file)
 file.exists(metadata_file)
+
 
 
 
 # Part 1.b: Initializing data and converting Ensembl IDs to Hugo gene names
 
 # Read in metadata TSV file
-metadata <- readr::read_tsv(metadata_file)
+metadata <- read_tsv(metadata_file)
 
 # Read in data TSV file
-expression_df <- readr::read_tsv(data_file) %>%
+expression_df <- read_tsv(data_file) %>%
   # Tuck away the Gene ID column as row names
   tibble::column_to_rownames("Gene")
 
@@ -136,6 +149,41 @@ mapped_df <- mapped_list %>%
 
 head(mapped_df)
 
+summary(as.factor(mapped_df$Hugo), maxsum = 10)
+# 13,721 NAs: # of Ensembl IDs that did not map to HUGO gene names 
+
+collapsed_mapped_df <- mapped_df %>%
+  # Group by Ensembl IDs
+  dplyr::group_by(Ensembl) %>%
+  # Collapse the HUGO gene names `mapped_df` into one column named `all_HUGO_names`
+  dplyr::summarize(all_HUGO_names = paste(Hugo, collapse = ";"))
+
+head(collapsed_mapped_df)
+
+final_mapped_df <- data.frame(
+  "first_HUGO_name" = mapIds(
+    org.Hs.eg.db,
+    keys = expression_df$Gene,
+    keytype = "ENSEMBL", 
+    column = "SYMBOL",
+    multiVals = "first" # Keep only the first mapped value for each Ensembl ID
+  )
+) %>%
+  # Make an `Ensembl` column to store the rownames
+  tibble::rownames_to_column("Ensembl") %>%
+  # Add the multiple mappings data from `collapsed_mapped_df` using Ensembl IDs
+  dplyr::inner_join(collapsed_mapped_df, by = "Ensembl") %>%
+  # Now let's add on the rest of the expression data
+  dplyr::inner_join(expression_df, by = c("Ensembl" = "Gene"))
+
+final_mapped_df %>%
+  # Filter `final_mapped_df` to rows with multiple mapped values
+  dplyr::filter(stringr::str_detect(all_HUGO_names, ";")) %>%
+  head()
+
+write_tsv(final_mapped_df, file.path("results","Ensembl_HUGO_names.tsv"))
+
+
 
 
 # Part 1.c: Log-scale data, calculate per-gene median expression ranges,
@@ -146,7 +194,6 @@ expr_format = subset(expr_format, select = -Hugo)
 
 head(expr_format)
 
-# What size is your expression matrix? How many genes does it include? 
 print(dim(expr_format))
 # Expression matrix size: 44293 x 81
 # Number of genes: 44293 genes
@@ -180,13 +227,14 @@ densityPlot <- ggplot(data = median_ranges_full, aes(x = Median)) +
 
 # Save density plot
 ggsave(
-  filename = file.path("plots", "median_gene_density_plot.png"),
+  filename = file.path("Assn2-plots", "median_gene_density_plot.png"),
   plot = densityPlot,
   device = "png",
   width = 8,
   height = 6,
   units = "in"
 )
+
 
 
 
@@ -212,7 +260,7 @@ percentVar <- round(100 * attr(pcaData, "percentVar"))
 
 pcaPlot <- ggplot(pcaData, aes(PC1, PC2, color=TestGroups)) +
   geom_point(size=3) +
-  ggtitle("Principal Component Analysis of Healthy and Pre-T1D Samples")
+  ggtitle("Principal Component Analysis of Healthy and Pre-T1D Samples") +
   xlab(paste0("PC1: ",percentVar[1],"% variance")) +
   ylab(paste0("PC2: ",percentVar[2],"% variance")) + 
   coord_fixed()
@@ -220,13 +268,14 @@ pcaPlot <- ggplot(pcaData, aes(PC1, PC2, color=TestGroups)) +
   
 # Save PCA plot
 ggsave(
-  filename = file.path("plots", "pca_plot.png"),
+  filename = file.path("Assn2-plots", "pca_plot.png"),
   plot = pcaPlot,
   device = "png",
   width = 8,
   height = 6,
   units = "in"
 )
+
 
 
 
@@ -240,7 +289,7 @@ tsnePlot <- last_plot() +
 
 # Save t-SNE plot
 ggsave(
-  filename = file.path("plots", "t-sne_plot.png"),
+  filename = file.path("Assn2-plots", "t-sne_plot.png"),
   plot = tsnePlot,
   device = "png",
   width = 8,
@@ -250,10 +299,44 @@ ggsave(
 
 
 
+
 # Part 2.d.ii: Generate UMAP plot
 set.seed(246)
 
-normalized_counts <- assay(dds_norm) %>%
+expr_df2 <- read_tsv(data_file) %>%
+  tibble::column_to_rownames("Gene")
+
+expr_df2 <- expr_df2 %>%
+  dplyr::select(metadata$refinebio_accession_code)
+
+all.equal(colnames(expr_df2), metadata$refinebio_accession_code)
+
+metadata2 <- metadata %>%
+  dplyr::select( # Select only the columns needed for plotting
+    refinebio_accession_code,
+    TestGroups
+  ) %>%
+  dplyr::mutate( # Convert the annotation variables into factors
+    TestGroups = factor(
+      TestGroups,
+      levels = c("Healthy", "Pre-T1D")
+    )
+  )
+
+filtered_expression_df <- expr_df2 %>%
+  dplyr::filter(rowSums(.) >= 200)
+
+filtered_expression_df <- round(filtered_expression_df)
+
+dds2 <- DESeqDataSetFromMatrix(
+  countData = filtered_expression_df, # Counts values for all samples in dataset
+  colData = metadata2, # annotation data for the samples in the counts data frame
+  design = ~1
+)
+
+dds2_norm <- vst(dds2)
+
+normalized_counts <- assay(dds2_norm) %>%
   t()
 
 umap_results <- umap::umap(normalized_counts)
@@ -262,15 +345,19 @@ umap_plot_df <- data.frame(umap_results$layout) %>%
   # Turn sample IDs stored as row names into a column
   tibble::rownames_to_column("refinebio_accession_code") %>%
   # Add the metadata into this data frame; match by sample IDs
-  dplyr::inner_join(metadata, by = "refinebio_accession_code")
+  dplyr::inner_join(metadata2, by = "refinebio_accession_code")
+
+umap_plot_df
 
 umapPlot <- ggplot(umap_plot_df, aes(x = X1, y = X2, color=TestGroups)) +
   geom_point() +
   ggtitle("UMAP Plot of Healthy and Pre-T1D Samples")
 
+umapPlot
+
 # Save UMAP  plot
 ggsave(
-  filename = file.path("plots", "umap_plot.png"),
+  filename = file.path("Assn2-plots", "umap_plot.png"),
   plot = umapPlot,
   device = "png",
   width = 8,
@@ -280,26 +367,28 @@ ggsave(
 
 
 
+
 # Part 3.a Perform differential analysis
 set.seed(369)
 
-expressiondf_MOD <- expression_df %>%
+exprdf_DA <- expression_df %>%
   tibble::column_to_rownames("Gene")
 
-expressiondf_MOD <- expressiondf_MOD %>%
+exprdf_DA <- exprdf_DA %>%
   dplyr::select(metadata$refinebio_accession_code)
 
 # Check if this is in the same order
-all.equal(colnames(expressiondf_MOD), metadata$refinebio_accession_code)
+all.equal(colnames(exprdf_DA), metadata$refinebio_accession_code)
 
 metadata <- metadata %>%
   dplyr::mutate(
     TestGroups = factor(TestGroups, levels = c("Healthy", "Pre-T1D"))
   )
 
-levels(metadata$TestGroups)
+filter_exprdf_DA <- exprdf_DA %>%
+  dplyr::filter(rowSums(.) >= 75)
 
-gene_matrix <- round(expressiondf_MOD)
+gene_matrix <- round(filter_exprdf_DA)
 
 ddset <- DESeqDataSetFromMatrix(
   # Non-normalized count data
@@ -331,7 +420,8 @@ deseq_df <- deseq_results %>%
 
 head(deseq_df)
 
-readr::write_tsv(deseq_df,file.path("results","diff_expr_results.tsv"))
+write_tsv(deseq_df,file.path("results","diff_expr_results.tsv"))
+
 
 
 
@@ -346,13 +436,14 @@ volcano_plot <- EnhancedVolcano::EnhancedVolcano(
 
 #Save volcano plot
 ggsave(
-  file.path("plots", "volcano_plot.png"),
+  file.path("Assn2-plots", "volcano_plot.png"),
   plot = volcano_plot,
   device = "png",
   width = 8,
   height = 6,
   units = "in"
 )
+
 
 
 
@@ -363,61 +454,282 @@ top_50_genes <- deseq_df %>%
 
 
 # Save the top 50 genes to a TSV file
-readr::write_tsv(top_50_genes, file.path("results", "top_50_diff_expr_genes.tsv"))
+write_tsv(top_50_genes, file.path("results", "top_50_diff_expr_genes.tsv"))
+
 
 
 
 # Part 4: Create a heatmap
+sigGenes <- read_tsv("results/top_50_diff_expr_genes.tsv")
 
-# Extract list of significant differentially expressed genes
-sigGenes <- read_tsv("Results/diff_expr_results.tsv")
+df <- read_tsv(data_file) 
 
-set.seed(0205)
+top50_geneNames <- sigGenes$Gene
+
+df <- df %>%
+  dplyr::filter(Gene %in% top50_geneNames)
+
+df <- data.frame(df) %>% 
+  tibble::column_to_rownames("Gene")
+
+annotation_df <- metadata %>%
+  # Select the variables that we want for annotating the heatmap
+  dplyr::select(
+    refinebio_accession_code,
+    TestGroups
+  ) %>%
+  # The `pheatmap()` function requires that the row names of our
+  # annotation object matches the column names of our dataset object
+  tibble::column_to_rownames("refinebio_accession_code")
+
+heatmap <- pheatmap(
+  df,
+  cluster_rows = TRUE, # Cluster the rows of the heatmap (genes)
+  cluster_cols = TRUE, # Cluster the columns of the heatmap (samples)
+  show_rownames = FALSE,
+  show_colnames = FALSE,
+  annotation_col = annotation_df,
+  main = "Annotated Heatmap",
+  colorRampPalette(c(
+    "green",
+    "white",
+    "darkmagenta"
+  ))(25),
+  scale = "row" # Scale values in the direction of genes (rows)
+)
+
+ggsave(
+  file.path("Assn2-plots", "heatmap.png"),
+  plot = heatmap,
+  device = "png",
+  width = 8,
+  height = 6,
+  units = "in"
+)
+
 
 
 
 # Part 5.1 Enrichment analysis using gProfiler2 and gene ontology
+diffGeneList <- read_tsv("results/diff_expr_results.tsv")
+diffGeneList <- diffGeneList$Gene
 
-deseq_df <- read_tsv("Results/diff_expr_results.tsv")
-deseq_vec <- unlist(deseq_df)
+gostres <- gost(query = diffGeneList, 
+                organism = "hsapiens", 
+                ordered_query = FALSE, 
+                multi_query = FALSE, 
+                significant = TRUE, 
+                exclude_iea = FALSE, 
+                measure_underrepresentation = FALSE, 
+                evcodes = FALSE, 
+                user_threshold = 0.05, 
+                correction_method = "g_SCS", 
+                domain_scope = "annotated", 
+                custom_bg = NULL, 
+                numeric_ns = "", 
+                sources = c("GO:BP"), 
+                as_short_link = FALSE, 
+                highlight = TRUE)
 
-gostres <- gost(query = deseq_vec, 
-                organism = "hsapiens", ordered_query = FALSE, 
-                multi_query = FALSE, significant = TRUE, exclude_iea = FALSE, 
-                measure_underrepresentation = FALSE, evcodes = FALSE, 
-                user_threshold = 0.05, correction_method = "g_SCS", 
-                domain_scope = "annotated", custom_bg = NULL, 
-                numeric_ns = "", sources = NULL, as_short_link = FALSE, highlight = TRUE)
+names(gostres)
 
+gProf_table <- gostres$result
 
-gostres$result
 gostplot(gostres, capped = TRUE, interactive = TRUE)
+gProfPlot <- gostplot(gostres, capped = FALSE, interactive = FALSE)
+
+ggsave(
+  file.path("Assn2-plots", "gProfiler_plot.png"),
+  plot = gProfPlot,
+  device = "png",
+  width = 8,
+  height = 6,
+  units = "in"
+)
+
+write_tsv(gProf_table, file.path("results", "gProfiler_EA.tsv"))
 
 
 
 
-# Part 5.2 Enrichment analysis using clusterProfiler and gene ontology
+# Part 5.2 Enrichment analysis using clustProfiler and gene ontology
+sigs <- read_tsv("results/diff_expr_results.tsv")
+clustGeneList <- sigs$log2FoldChange
+names(clustGeneList) <- sigs$Gene
 
-deseq_df <- read_tsv("Results/diff_expr_results.tsv")
-
-# omits NA values from the data
-clean_df <- na.omit(deseq_df)
-
-gene_list <- df_cleaned$log2FoldChange
-names(gene_list) <- df_cleaned$Gene
-
-# runs GSE from clusterProfiler on the data
-gse <- gseGO(
-  gene_list,
-  keyType = "ENSEMBL",
+clustProf_results <- gseGO(
+  clustGeneList,
   OrgDb = "org.Hs.eg.db",
+  ont = "BP",
+  keyType = "ENSEMBL",
   eps = 1e-300
 )
 
-# prints and saves the plot
-require(DOSE)
-gPlot <- dotplot(gse, showCategory=10, split=".sign") + facet_grid(.~.sign)
-png("Plots/clusterProfiler.png")
-print(gPlot)
+clustProf_results_df <- as.data.frame(clustProf_results)
+gseaplot(clustProf_results, geneSetID = 1)
+
+write_tsv(clustProf_results_df, file.path("results","clustProfiler_EA.tsv"))
 
 
+
+
+# Part 5.3 Enrichment analysis using topGO and gene ontology
+totalGenes <- read_tsv("results/Ensembl_HUGO_names.tsv")
+totalGeneList <- na.omit(totalGenes$first_HUGO_name)
+
+length(totalGeneList)
+head(totalGeneList)
+
+mapped_diffGenes <- mapIds(
+  org.Hs.eg.db, 
+  keys = diffGeneList,
+  keytype = "ENSEMBL",
+  column = "SYMBOL",
+  multiVals = "list"
+)
+
+head(mapped_diffGenes)
+
+mapped_df_diffGenes <- mapped_diffGenes %>%
+  tibble::enframe(name = "Ensembl", value = "Hugo") %>%
+  tidyr::unnest(cols = Hugo)
+
+diffGeneList_HUGO <- na.omit(mapped_df_diffGenes$Hugo)
+
+length(diffGeneList_HUGO)
+head(diffGeneList_HUGO)
+
+db = useMart('ENSEMBL_MART_ENSEMBL',dataset='hsapiens_gene_ensembl', host="www.ensembl.org")
+go_ids = getBM(attributes=c('go_id', 'external_gene_name', 'namespace_1003'), filters='external_gene_name', values=totalGeneList, mart=db)
+
+# build the gene 2 GO annotation list (needed to create topGO object)
+gene_2_GO=unstack(go_ids[,c(1,2)])
+
+# remove any candidate genes without GO annotation
+keep = diffGeneList_HUGO %in% go_ids[,2]
+keep =which(keep==TRUE)
+diffGeneList_HUGO=diffGeneList_HUGO[keep]
+
+# make named factor showing which genes are of interest
+geneList=factor(as.integer(totalGeneList %in% diffGeneList_HUGO))
+names(geneList)= totalGeneList
+
+topGO_data <- new("topGOdata", 
+                  ontology = "BP",
+                  allGenes = geneList,
+                  annot = annFUN.gene2GO,
+                  gene2GO = gene_2_GO)
+
+classic_fisher_result = runTest(topGO_data, algorithm='classic', statistic='fisher')
+
+weight_fisher_result = runTest(topGO_data, algorithm='weight01', statistic='fisher') 
+
+allGO=usedGO(topGO_data)
+all_res <- GenTable(topGO_data, classicFisher= classic_fisher_result, weightFisher=weight_fisher_result, orderBy='weightFisher', topNodes=length(allGO))
+
+#performing BH correction on our p values
+p.adj=round(p.adjust(all_res$weightFisher,method="BH"),digits = 4)
+
+# create the file with all the statistics from GO analysis
+all_res_final=cbind(all_res,p.adj)
+all_res_final=all_res_final[order(all_res_final$p.adj),]
+
+#get list of significant GO after multiple testing correction
+results.table.bh=all_res_final[which(all_res_final$p.adj<=0.05),]
+
+write_tsv(all_res_final,file.path("results","topGO_EA.tsv"))
+
+# PLOT the GO hierarchy plot: the enriched GO terms are colored in yellow/red according to significance level
+pdf(file='Assn2-plots/topGO_plot.pdf', height=12, width=12, paper='special', pointsize=18)
+showSigOfNodes(topGO_data, score(weight_fisher_result), useInfo = "none", sigForAll=FALSE, firstSigNodes=2,.NO.CHAR=50)
+dev.off()
+
+myterms = results.table.bh$GO.ID
+mygenes = genesInTerm(topGO_data, myterms)
+
+var=c()
+for (i in 1:length(myterms))
+{
+  myterm=myterms[i]
+  mygenesforterm= mygenes[myterm][[1]]
+  mygenesforterm=paste(mygenesforterm, collapse=',')
+  var[i]=paste("GOTerm",myterm,"genes-",mygenesforterm)
+}
+write.table(var,"genetoGOmapping.txt",sep="\t",quote=F)
+
+var <- as.data.frame(var)
+
+write_tsv(var,file.path("results","topGO_genetoGOmapping.tsv"))
+
+
+
+
+# Part 6: Combined table of enrichment analysis results
+gprof_results <- read_tsv("results/gProfiler_EA.tsv")
+clust_results <- read_tsv("results/clustProfiler_EA.tsv")
+topgo_results <- read_tsv("results/topGO_EA.tsv")
+
+gprof_results <- gprof_results %>%
+  select(
+    GO.ID = term_id,
+    term = term_name,
+    gProfiler.p_value = p_value,
+    significant_gprof = significant
+  )
+
+clust_results <- clust_results %>%
+  select(
+    GO.ID = ID,
+    term = Description,
+    clustProfiler.p_value = pvalue,
+  )%>%
+  mutate(
+    significant_clustprof = TRUE
+  )
+
+topgo_results <- topgo_results %>%
+  select(
+    GO.ID = GO.ID,
+    term = Term,
+    topGO.p_value = weightFisher,
+    significant_topgo = Significant
+  )
+
+topgo_results <- topgo_results %>%
+  mutate(
+    significant_topgo = ifelse(significant_topgo != 0, "TRUE", "FALSE")
+  )
+
+# Merge results by Gene Set / Term
+merged_results <- gprof_results %>%
+  full_join(clust_results, by = c("GO.ID", "term")) %>%
+  full_join(topgo_results, by = c("GO.ID", "term"))
+
+merged_results <- merged_results %>%
+  mutate(
+    across(starts_with("significant"), ~ as.logical(.)),
+    across(ends_with("p_value"), ~ as.numeric(.))
+  )
+
+sorted_results <- merged_results %>%
+  arrange(gProfiler.p_value, clustProfiler.p_value, topGO.p_value)
+
+enriched_terms <- sorted_results %>%
+  rowwise() %>%
+  mutate(
+    significant_count = sum(c_across(starts_with("significant")) == "TRUE", na.rm = TRUE),
+    included_count = sum(!is.na(c_across(ends_with("p_value"))))
+  ) %>%
+  ungroup()
+
+enriched_terms <- enriched_terms %>% 
+  select(-c(significant_gprof, significant_clustprof, significant_topgo))
+
+write_tsv(enriched_terms, "results/merged_enrichment_analysis.tsv")
+
+top10_enriched_terms <- enriched_terms %>% 
+  filter(significant_count >= 2) %>%
+  filter(included_count == 3) %>%
+  slice_head(n = 10)
+
+write_tsv(top10_enriched_terms, "results/top10_terms_EA.tsv")
