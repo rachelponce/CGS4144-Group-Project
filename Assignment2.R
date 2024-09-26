@@ -4,9 +4,12 @@
 # https://alexslemonade.github.io/refinebio-examples/03-rnaseq/differential-expression_rnaseq_01.html
 # https://www.r-bloggers.com/2019/05/quick-and-easy-t-sne-analysis-in-r/
 # https://alexslemonade.github.io/refinebio-examples/03-rnaseq/dimension-reduction_rnaseq_02_umap.html
+# https://alexslemonade.github.io/refinebio-examples/03-rnaseq/differential-expression_rnaseq_01.html
 
 # How to clear Rstudio environment: rm(list = ls())
 # How to clear Rstudio console: CTRL + L
+# Delete a data frame: rm(df1)
+
 
 # Package Installation
 install.packages("devtools")
@@ -86,8 +89,6 @@ file.exists(metadata_file)
 # Read in metadata TSV file
 metadata <- readr::read_tsv(metadata_file)
 
-library(magrittr)
-
 # Read in data TSV file
 expression_df <- readr::read_tsv(data_file) %>%
   # Tuck away the Gene ID column as row names
@@ -103,8 +104,6 @@ all.equal(colnames(expression_df), metadata$refinebio_accession_code)
 # Bring back the "Gene" column in preparation for mapping
 expression_df <- expression_df %>%
   tibble::rownames_to_column("Gene")
-
-library(org.Hs.eg.db)
 
 # Map Ensembl IDs to their associated HUGO gene names
 mapped_list <- mapIds(
@@ -131,8 +130,6 @@ head(mapped_df)
 
 # Part 1.c: Log-scale data, calculate per-gene median expression ranges,
 # then make a density plot showing results. 
-
-library(dplyr)
 
 expr_format <- expression_df %>% full_join(mapped_df, by = c("Gene" = "Ensembl")) %>% mutate(Gene = ifelse(!is.na(Hugo), Hugo, Gene))
 expr_format = subset(expr_format, select = -Hugo)
@@ -192,10 +189,10 @@ dds <- DESeqDataSetFromMatrix(countData = rounded_df,
                               design= ~TestGroups)
 
 # Performance of differential expression analysis
-dds <- DESeq(dds)
+ddsAnalysis <- DESeq(dds)
 
 # Stabilize variance
-dds_norm <- vst(dds)
+dds_norm <- vst(ddsAnalysis)
 
 pcaData <- plotPCA(dds_norm, intgroup = "TestGroups", returnData = TRUE)
 
@@ -273,3 +270,94 @@ ggsave(
   units = "in"
 )
 
+
+
+# Part 3.a Perform differential analysis
+expressiondf_MOD <- expression_df %>%
+  tibble::column_to_rownames("Gene")
+
+expressiondf_MOD <- expressiondf_MOD %>%
+  dplyr::select(metadata$refinebio_accession_code)
+
+# Check if this is in the same order
+all.equal(colnames(expressiondf_MOD), metadata$refinebio_accession_code)
+
+metadata <- metadata %>%
+  dplyr::mutate(
+    TestGroups = factor(TestGroups, levels = c("Healthy", "Pre-T1D"))
+  )
+
+levels(metadata$TestGroups)
+
+gene_matrix <- round(expressiondf_MOD)
+
+ddset <- DESeqDataSetFromMatrix(
+  # Non-normalized count data
+  countData = gene_matrix,
+  # Metadata data frame
+  colData = metadata,
+  # Supply experimental variable
+  design = ~TestGroups
+)
+
+deseq_object <- DESeq(ddset)
+
+deseq_results <- results(deseq_object)
+
+deseq_results <- lfcShrink(
+  deseq_object, # Original DESeq2 object after running DESeq()
+  coef = 2, # Log fold change coefficient used in DESeq(); default is 2.
+  res = deseq_results # Original DESeq2 results table
+)
+
+head(deseq_results)
+
+# Convert data set to data frame
+deseq_df <- deseq_results %>%
+  as.data.frame() %>%
+  tibble::rownames_to_column("Gene") %>%
+  dplyr::mutate(threshold = padj < 0.05) %>%
+  dplyr::arrange(dplyr::desc(log2FoldChange))
+
+head(deseq_df)
+
+readr::write_tsv(deseq_df,file.path("results","SRP018853_diff_expr_results.tsv"))
+
+
+
+# Part 3.b: Create a volcano plot
+volcano_plot <- EnhancedVolcano::EnhancedVolcano(
+  deseq_df,
+  lab = deseq_df$Gene,
+  x = "log2FoldChange",
+  y = "padj",
+  pCutoff = 0.01,
+  xlim = c(-1.5, 1.5), # Adjust limits (log2 fold change range)
+  ylim = c(0, -log10(0.01)),
+  col = c("black", "orange", "blue"),
+)
+
+#Save volcano plot
+ggsave(
+  file.path("plots", "SRP018853_volcano_plot.png"),
+  plot = volcano_plot,
+  device = "png",
+  width = 8,
+  height = 6,
+  units = "in"
+)
+
+
+
+# Part 3.c: Create a table of the top 50 differentially expressed genes
+top_50_genes <- deseq_df %>%
+  dplyr::arrange(padj, desc(log2FoldChange)) %>%  # Sort by padj and log2FoldChange
+  dplyr::slice_head(n = 50)
+
+
+# Save the top 50 genes to a TSV file
+readr::write_tsv(top_50_genes, file.path("results", "SRP018853_top_50_diff_expr_genes.tsv"))
+
+
+
+# Part 4: Create a heatmap
