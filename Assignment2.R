@@ -39,6 +39,8 @@ if (!("M3C" %in% installed.packages())) {
   BiocManager::install("M3C")
 }
 
+install_github("jokergoo/ComplexHeatmap")
+
 # Libraries
 library(readr)
 library(dplyr)
@@ -49,6 +51,8 @@ library(ggplot2)
 library(DESeq2)
 library(M3C)
 library(umap)
+library(ComplexHeatmap)
+library(devtools)
 
 
 # Create the data folder if it doesn't exist
@@ -273,6 +277,8 @@ ggsave(
 
 
 # Part 3.a Perform differential analysis
+set.seed(369)
+
 expressiondf_MOD <- expression_df %>%
   tibble::column_to_rownames("Gene")
 
@@ -361,3 +367,8 @@ readr::write_tsv(top_50_genes, file.path("results", "SRP018853_top_50_diff_expr_
 
 
 # Part 4: Create a heatmap
+
+# Extract list of significant differentially expressed genes
+sigGenes <- read_tsv("Results/SRP018853_diff_expr_results.tsv")
+
+set.seed(0205)
