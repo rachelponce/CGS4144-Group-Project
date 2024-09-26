@@ -8,7 +8,6 @@
 # How to clear Rstudio environment: rm(list = ls())
 # How to clear Rstudio console: CTRL + L
 
-
 # Package Installation
 install.packages("devtools")
 install.packages("BiocManager", repos = "https://cloud.r-project.org")
@@ -196,9 +195,9 @@ dds <- DESeqDataSetFromMatrix(countData = rounded_df,
 dds <- DESeq(dds)
 
 # Stabilize variance
-vsd <- vst(dds)
+dds_norm <- vst(dds)
 
-pcaData <- plotPCA(vsd, intgroup = "TestGroups", returnData = TRUE)
+pcaData <- plotPCA(dds_norm, intgroup = "TestGroups", returnData = TRUE)
 
 # metadata$TestGroups <- NULL : To clear and remove TestGroups columns
 
@@ -232,6 +231,8 @@ tsneData <- tsne(rounded_df,labels=as.factor(metadata$TestGroups))
 plot <- last_plot() + 
   ggtitle("t-SNE Plot of Healthy and Pre-T1D Samples")
 
+print(plot)
+
 # Save t-SNE plot
 ggsave(
   filename = file.path("plots", "SRP018853_t-sne_plot.png"),
@@ -241,3 +242,34 @@ ggsave(
   height = 6,
   units = "in"
 )
+
+
+
+# Part 2.d.ii: Generate UMAP plot
+set.seed(246)
+
+normalized_counts <- assay(dds_norm) %>%
+  t()
+
+umap_results <- umap::umap(normalized_counts)
+
+umap_plot_df <- data.frame(umap_results$layout) %>%
+  # Turn sample IDs stored as row names into a column
+  tibble::rownames_to_column("refinebio_accession_code") %>%
+  # Add the metadata into this data frame; match by sample IDs
+  dplyr::inner_join(metadata, by = "refinebio_accession_code")
+
+ggplot(umap_plot_df, aes(x = X1, y = X2, color=TestGroups)) +
+  geom_point() +
+  ggtitle("UMAP Plot of Healthy and Pre-T1D Samples")
+
+# Save UMAP  plot
+ggsave(
+  filename = file.path("plots", "SRP018853_umap_plot.png"),
+  plot = last_plot(),
+  device = "png",
+  width = 8,
+  height = 6,
+  units = "in"
+)
+
