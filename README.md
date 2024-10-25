@@ -8,7 +8,5 @@ https://www.refine.bio/experiments/SRP018853/altered-microrna-expression-in-indi
 
 ## Group Members
 - Sana Firoz
-- Christopher Bursch
 - Rachel Ponce
 - Yudi Zhang
-- Francis Orozco
