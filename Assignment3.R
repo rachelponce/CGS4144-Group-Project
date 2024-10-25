@@ -113,3 +113,19 @@ plot(pam_result_10000_Groups2)
 distance_matrix <- dist(data_matrix)
 hclust_result <- hclust(distance_matrix, method = "complete")
 plot(hclust_result, labels = FALSE, main = "Hclust dendrogram n = 5000")
+
+distance_matrix_10 <- dist(data_matrix_10)
+hclust_result_10 <- hclust(distance_matrix_10, method = "complete")
+plot(hclust_result_10, labels = FALSE, main = "Hclust dendrogram n = 10")
+
+distance_matrix_100 <- dist(data_matrix_100)
+hclust_result_100 <- hclust(distance_matrix_100, method = "complete")
+plot(hclust_result_100, labels = FALSE, main = "Hclust dendrogram n = 100")
+
+distance_matrix_1000 <- dist(data_matrix_1000)
+hclust_result_1000 <- hclust(distance_matrix_1000, method = "complete")
+plot(hclust_result_1000, labels = FALSE, main = "Hclust dendrogram n = 1000")
+
+distance_matrix_10000 <- dist(data_matrix_10000)
+hclust_result_10000 <- hclust(distance_matrix_10000, method = "complete")
+plot(hclust_result_10000, labels = FALSE, main = "Hclust dendrogram n = 10000")
