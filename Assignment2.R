@@ -19,7 +19,6 @@ install.packages("BiocManager", repos = "https://cloud.r-project.org")
 if (!("org.Hs.eg.db" %in% installed.packages())) {
   BiocManager::install("org.Hs.eg.db", update = FALSE)
 }
-library(org.Hs.eg.db)
 
 if (!("DESeq2" %in% installed.packages())) {
   BiocManager::install("DESeq2", update = FALSE)
@@ -39,9 +38,14 @@ if (!("M3C" %in% installed.packages())) {
   BiocManager::install("M3C")
 }
 
+if (!("ComplexHeatmap" %in% installed.packages())) {
+  BiocManager::install("ComplexHeatmap", update = FALSE)
+}
+
 install_github("jokergoo/ComplexHeatmap")
 
 # Libraries
+library(org.Hs.eg.db)
 library(readr)
 library(dplyr)
 library(tidyr)
@@ -53,6 +57,8 @@ library(M3C)
 library(umap)
 library(ComplexHeatmap)
 library(devtools)
+library(circlize)
+library(EnhancedVolcano)
 
 
 # Create the data folder if it doesn't exist
@@ -174,7 +180,7 @@ densityPlot <- ggplot(data = median_ranges_full, aes(x = Median)) +
 
 # Save density plot
 ggsave(
-  filename = file.path("plots", "SRP018853_median_gene_density_plot.png"),
+  filename = file.path("plots", "median_gene_density_plot.png"),
   plot = densityPlot,
   device = "png",
   width = 8,
@@ -214,7 +220,7 @@ pcaPlot <- ggplot(pcaData, aes(PC1, PC2, color=TestGroups)) +
   
 # Save PCA plot
 ggsave(
-  filename = file.path("plots", "SRP018853_pca_plot.png"),
+  filename = file.path("plots", "pca_plot.png"),
   plot = pcaPlot,
   device = "png",
   width = 8,
@@ -232,11 +238,9 @@ tsneData <- tsne(rounded_df,labels=as.factor(metadata$TestGroups))
 tsnePlot <- last_plot() + 
   ggtitle("t-SNE Plot of Healthy and Pre-T1D Samples")
 
-print(plot)
-
 # Save t-SNE plot
 ggsave(
-  filename = file.path("plots", "SRP018853_t-sne_plot.png"),
+  filename = file.path("plots", "t-sne_plot.png"),
   plot = tsnePlot,
   device = "png",
   width = 8,
@@ -266,7 +270,7 @@ umapPlot <- ggplot(umap_plot_df, aes(x = X1, y = X2, color=TestGroups)) +
 
 # Save UMAP  plot
 ggsave(
-  filename = file.path("plots", "SRP018853_umap_plot.png"),
+  filename = file.path("plots", "umap_plot.png"),
   plot = umapPlot,
   device = "png",
   width = 8,
@@ -327,7 +331,7 @@ deseq_df <- deseq_results %>%
 
 head(deseq_df)
 
-readr::write_tsv(deseq_df,file.path("results","SRP018853_diff_expr_results.tsv"))
+readr::write_tsv(deseq_df,file.path("results","diff_expr_results.tsv"))
 
 
 
@@ -338,14 +342,11 @@ volcano_plot <- EnhancedVolcano::EnhancedVolcano(
   x = "log2FoldChange",
   y = "padj",
   pCutoff = 0.01,
-  xlim = c(-1.5, 1.5), # Adjust limits (log2 fold change range)
-  ylim = c(0, -log10(0.01)),
-  col = c("black", "orange", "blue"),
 )
 
 #Save volcano plot
 ggsave(
-  file.path("plots", "SRP018853_volcano_plot.png"),
+  file.path("plots", "volcano_plot.png"),
   plot = volcano_plot,
   device = "png",
   width = 8,
@@ -362,13 +363,61 @@ top_50_genes <- deseq_df %>%
 
 
 # Save the top 50 genes to a TSV file
-readr::write_tsv(top_50_genes, file.path("results", "SRP018853_top_50_diff_expr_genes.tsv"))
+readr::write_tsv(top_50_genes, file.path("results", "top_50_diff_expr_genes.tsv"))
 
 
 
 # Part 4: Create a heatmap
 
 # Extract list of significant differentially expressed genes
-sigGenes <- read_tsv("Results/SRP018853_diff_expr_results.tsv")
+sigGenes <- read_tsv("Results/diff_expr_results.tsv")
 
 set.seed(0205)
+
+
+
+# Part 5.1 Enrichment analysis using gProfiler2 and gene ontology
+
+deseq_df <- read_tsv("Results/diff_expr_results.tsv")
+deseq_vec <- unlist(deseq_df)
+
+gostres <- gost(query = deseq_vec, 
+                organism = "hsapiens", ordered_query = FALSE, 
+                multi_query = FALSE, significant = TRUE, exclude_iea = FALSE, 
+                measure_underrepresentation = FALSE, evcodes = FALSE, 
+                user_threshold = 0.05, correction_method = "g_SCS", 
+                domain_scope = "annotated", custom_bg = NULL, 
+                numeric_ns = "", sources = NULL, as_short_link = FALSE, highlight = TRUE)
+
+
+gostres$result
+gostplot(gostres, capped = TRUE, interactive = TRUE)
+
+
+
+
+# Part 5.2 Enrichment analysis using clusterProfiler and gene ontology
+
+deseq_df <- read_tsv("Results/diff_expr_results.tsv")
+
+# omits NA values from the data
+clean_df <- na.omit(deseq_df)
+
+gene_list <- df_cleaned$log2FoldChange
+names(gene_list) <- df_cleaned$Gene
+
+# runs GSE from clusterProfiler on the data
+gse <- gseGO(
+  gene_list,
+  keyType = "ENSEMBL",
+  OrgDb = "org.Hs.eg.db",
+  eps = 1e-300
+)
+
+# prints and saves the plot
+require(DOSE)
+gPlot <- dotplot(gse, showCategory=10, split=".sign") + facet_grid(.~.sign)
+png("Plots/clusterProfiler.png")
+print(gPlot)
+
+
